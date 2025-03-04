@@ -135,7 +135,7 @@ namespace Szeminarium1
 
             uint colors = Gl.GenBuffer();
             Gl.BindBuffer(GLEnum.ArrayBuffer, colors);
-            Gl.EnableVertexAttribArray(1);
+            //Gl.EnableVertexAttribArray(1);
             Gl.BufferData(GLEnum.ArrayBuffer, (ReadOnlySpan<float>)colorArray.AsSpan(), GLEnum.StaticDraw);
             Gl.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, 0, null);
 
