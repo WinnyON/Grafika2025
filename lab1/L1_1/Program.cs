@@ -73,10 +73,10 @@ namespace Szeminarium1
                 throw new Exception("Vertex shader failed to compile: " + Gl.GetShaderInfoLog(vshader));
 
             Gl.ShaderSource(fshader, FragmentShaderSource);
-            //Gl.CompileShader(fshader);
+            Gl.CompileShader(fshader);
 
             program = Gl.CreateProgram();
-            Gl.AttachShader(program, vshader);
+            //Gl.AttachShader(program, vshader);
             Gl.AttachShader(program, fshader);
             Gl.LinkProgram(program);
             Gl.DetachShader(program, vshader);
