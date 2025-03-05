@@ -67,6 +67,7 @@ namespace Szeminarium1
             uint fshader = Gl.CreateShader(ShaderType.FragmentShader);
 
             Gl.ShaderSource(vshader, VertexShaderSource);
+            Gl.AttachShader(program, vshader);
             Gl.CompileShader(vshader);
             Gl.GetShader(vshader, ShaderParameterName.CompileStatus, out int vStatus);
             if (vStatus != (int)GLEnum.True)
@@ -76,9 +77,9 @@ namespace Szeminarium1
             Gl.CompileShader(fshader);
 
             program = Gl.CreateProgram();
-            Gl.LinkProgram(program);
-            Gl.AttachShader(program, vshader);
+            
             Gl.AttachShader(program, fshader);
+            Gl.LinkProgram(program);
             Gl.DetachShader(program, vshader);
             Gl.DetachShader(program, fshader);
             Gl.DeleteShader(vshader);
