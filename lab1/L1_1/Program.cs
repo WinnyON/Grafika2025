@@ -17,7 +17,7 @@ namespace Szeminarium1
         layout (location = 0) in vec3 vPos;
 		layout (location = 1) in vec4 vCol;
 
-		out vec4 outCol;
+		out vec3 outCol;
         
         void main()
         {
