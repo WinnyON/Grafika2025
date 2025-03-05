@@ -17,12 +17,12 @@ namespace Szeminarium1
         layout (location = 0) in vec3 vPos;
 		layout (location = 1) in vec4 vCol;
 
-		out vec3 outCol;
+		out vec4 outCol;
         
         void main()
         {
 			outCol = vCol;
-            gl_Position = vec4(vPos.x, vPos.y, vPos.z, 1.0);
+            gl_Position = vec4(vPos.x, vPos.y, vPos.z, 0.4);
         }
         ";
 
@@ -67,7 +67,6 @@ namespace Szeminarium1
             uint fshader = Gl.CreateShader(ShaderType.FragmentShader);
 
             Gl.ShaderSource(vshader, VertexShaderSource);
-            Gl.AttachShader(program, vshader);
             Gl.CompileShader(vshader);
             Gl.GetShader(vshader, ShaderParameterName.CompileStatus, out int vStatus);
             if (vStatus != (int)GLEnum.True)
@@ -78,6 +77,7 @@ namespace Szeminarium1
 
             program = Gl.CreateProgram();
             
+            Gl.AttachShader(program, vshader);
             Gl.AttachShader(program, fshader);
             Gl.LinkProgram(program);
             Gl.DetachShader(program, vshader);
