@@ -111,7 +111,7 @@ namespace Lab1
 
 
             float[] vertexArray = new float[] {
-               -0.4f, -0.1f, 0.0f, // 0. bal hatso alul
+               -0.4f, -0.15f, 0.0f, // 0. bal hatso alul
                 0.0f, -0.5f, 0.0f, // 1. kozep alul
                 0.0f, -0.5f, 0.0f, // 2. kozep alul
                -0.4f, 0.35f, 0.0f, // 3. bal hatso felul
@@ -119,7 +119,7 @@ namespace Lab1
                 0.0f, 0.7f, 0.0f, // 5. kozep hatso felul
                 0.4f, 0.35f, 0.0f, // 6. jobb hatso felul
                 0.4f, 0.35f, 0.0f, // 7. jobb hatso felul
-                0.4f, -0.1f, 0.0f, // 8. jobb hatso also
+                0.4f, -0.15f, 0.0f, // 8. jobb hatso also
                 0.0f, 0.0f, 0.0f, // 9. kozep felul
                 0.0f, 0.0f, 0.0f, // 10. kozep felul
                 0.0f, 0.0f, 0.0f, // 11. kozep felul
