@@ -49,6 +49,16 @@ namespace Szeminarium
             }
         }
 
+        public void SetZYAngle(double inc)
+        {
+            AngleToZYPlane += inc;
+        }
+        
+        public void SetZXAngle(double inc)
+        {
+            AngleToZXPlane += inc;
+        }
+
         public void IncreaseZXAngle()
         {
             AngleToZXPlane += AngleChangeStepSize;
@@ -62,7 +72,6 @@ namespace Szeminarium
         public void IncreaseZYAngle()
         {
             AngleToZYPlane += AngleChangeStepSize;
-
         }
 
         public void DecreaseZYAngle()

@@ -120,9 +120,11 @@ namespace GrafikaSzeminarium
             }
 
             //cube = ModelObjectDescriptor.CreateCube(Gl);
+            camera.SetZYAngle(Math.PI / 180 * 35);
+            camera.SetZXAngle(Math.PI / 180 * 500);
+
 
             cubes = new ModelObjectDescriptor[27];
-
             int index = 0;
             for (int i = -1; i <= 1; i++)
             {
