@@ -1,5 +1,6 @@
 ﻿
 using Silk.NET.Maths;
+using System.Security.Cryptography;
 
 namespace Szeminarium
 {
@@ -10,10 +11,14 @@ namespace Szeminarium
         public double AngleToZYPlane { get; private set; } = 0;
 
         public double AngleToZXPlane { get; private set; } = 0;
+        public float CameraTargetX { get; private set; } = 0;
+        public float CameraTargetY { get; private set; } = 0;
+        public float CameraTargetZ { get; private set; } = 0;
 
         const double DistanceScaleFactor = 1.1;
 
         const double AngleChangeStepSize = Math.PI / 180 * 5;
+        const float CameraTargetChangeStepSize = 0.1f;
 
         /// <summary>
         /// Gets the position of the camera.
@@ -45,8 +50,39 @@ namespace Szeminarium
             get
             {
                 // For the moment the camera is always pointed at the origin.
-                return Vector3D<float>.Zero;
+                //return Vector3D<float>.Zero;
+                return new Vector3D<float>(CameraTargetX, CameraTargetY, CameraTargetZ);
             }
+        }
+
+        public void IncreaseTargetX()
+        {
+            CameraTargetX += CameraTargetChangeStepSize;
+        }
+
+        public void DecreaseTargetX()
+        {
+            CameraTargetX -= CameraTargetChangeStepSize;
+        }
+
+        public void IncreaseTargetY()
+        {
+            CameraTargetY += CameraTargetChangeStepSize;
+        }
+
+        public void DecreaseTargetY()
+        {
+            CameraTargetY -= CameraTargetChangeStepSize;
+        }
+
+        public void IncreaseTargetZ()
+        {
+            CameraTargetZ += CameraTargetChangeStepSize;
+        }
+
+        public void DecreaseTargetZ()
+        {
+            CameraTargetZ -= CameraTargetChangeStepSize;
         }
 
         public void SetZYAngle(double inc)

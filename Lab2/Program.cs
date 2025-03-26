@@ -205,11 +205,29 @@ namespace GrafikaSzeminarium
                 case Key.Up:
                     camera.DecreaseDistance();
                     break;
-                case Key.U:
+                case Key.F:
                     camera.IncreaseZXAngle();
                     break;
-                case Key.D:
+                case Key.L:
                     camera.DecreaseZXAngle();
+                    break;
+                case Key.W:
+                    camera.DecreaseTargetZ();
+                    break;
+                case Key.S:
+                    camera.IncreaseTargetZ();
+                    break;
+                case Key.D:
+                    camera.IncreaseTargetX();
+                    break;
+                case Key.A:
+                    camera.DecreaseTargetX();
+                    break;
+                case Key.R:
+                    camera.DecreaseTargetZ();
+                    break;
+                case Key.T:
+                    camera.IncreaseTargetZ();
                     break;
                 case Key.Space:
                     cubeArrangementModel.AnimationEnabled = !cubeArrangementModel.AnimationEnabled;
@@ -222,6 +240,7 @@ namespace GrafikaSzeminarium
             // NO OpenGL
             // make it threadsafe
             cubeArrangementModel.AdvanceTime(deltaTime);
+
         }
 
         private static unsafe void GraphicWindow_Render(double deltaTime)
