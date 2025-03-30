@@ -2,6 +2,7 @@
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
+using System.Numerics;
 using Szeminarium;
 
 namespace GrafikaSzeminarium
@@ -10,6 +11,10 @@ namespace GrafikaSzeminarium
     {
         private static IWindow graphicWindow;
 
+        private static IInputContext _inputContext;
+        private static IKeyboard _keyboard;
+        private static IMouse mouse;
+
         private static GL Gl;
 
         private static ModelObjectDescriptor[] cubes;
@@ -17,6 +22,17 @@ namespace GrafikaSzeminarium
         private static CameraDescriptor camera = new CameraDescriptor();
 
         private static CubeArrangementModel cubeArrangementModel = new CubeArrangementModel();
+
+        private static float WindowWidth = 1080;
+        private static float WindowHeight = 720;
+        private static float AspectRatio = 108f / 72f;
+
+        private static bool animationInProgress = false;
+        private static List<ModelObjectDescriptor> animatedCubes;
+        private static float rotationProgress = 0;
+        private static int rotationAxis;
+        private static int rotationDirection = 1;
+        private static bool selectedRotation = false;
 
         private const string ModelMatrixVariableName = "uModel";
         private const string ViewMatrixVariableName = "uView";
@@ -59,7 +75,7 @@ namespace GrafikaSzeminarium
         {
             WindowOptions windowOptions = WindowOptions.Default;
             windowOptions.Title = "Lab2";
-            windowOptions.Size = new Silk.NET.Maths.Vector2D<int>(500, 500);
+            windowOptions.Size = new Silk.NET.Maths.Vector2D<int>((int)WindowWidth, (int)WindowHeight);
 
             graphicWindow = Window.Create(windowOptions);
 
@@ -67,8 +83,16 @@ namespace GrafikaSzeminarium
             graphicWindow.Update += GraphicWindow_Update;
             graphicWindow.Render += GraphicWindow_Render;
             graphicWindow.Closing += GraphicWindow_Closing;
+            graphicWindow.Resize += GraphicWindow_Resize;
 
             graphicWindow.Run();
+        }
+
+        private static void GraphicWindow_Resize(Vector2D<int> d)
+        {
+            AspectRatio = (float)d.X / d.Y;
+            WindowWidth = d.X;
+            WindowHeight = d.Y;
         }
 
         private static void GraphicWindow_Closing()
@@ -112,17 +136,23 @@ namespace GrafikaSzeminarium
         private static void GraphicWindow_Load()
         {
             Gl = graphicWindow.CreateOpenGL();
-
-            var inputContext = graphicWindow.CreateInput();
+            _inputContext = graphicWindow.CreateInput();
+            _keyboard = _inputContext.Keyboards[0]; // ez lehet nem jo
+            var inputContext = _inputContext; //graphicWindow.CreateInput();
             foreach (var keyboard in inputContext.Keyboards)
             {
                 keyboard.KeyDown += Keyboard_KeyDown;
             }
 
+            mouse = inputContext.Mice[0];
+            mouse.MouseMove += OnMouseMove;
+            mouse.Cursor.CursorMode = CursorMode.Raw;
             //cube = ModelObjectDescriptor.CreateCube(Gl);
-            camera.SetZYAngle(Math.PI / 180 * 35);
-            camera.SetZXAngle(Math.PI / 180 * 500);
+            //camera.SetZYAngle(Math.PI / 180 * 35);
+            //camera.SetZXAngle(Math.PI / 180 * 500);
 
+            //camera.SetZYAngle(Math.PI / 180);
+            //camera.SetZXAngle(Math.PI / 180);
 
             cubes = new ModelObjectDescriptor[27];
             int index = 0;
@@ -189,48 +219,96 @@ namespace GrafikaSzeminarium
             }
         }
 
+        private static void SetCursorMode()
+        {
+            if (mouse.Cursor.CursorMode == CursorMode.Raw)
+            {
+                mouse.Cursor.CursorMode = CursorMode.Normal;
+                //firstMove = true;
+            }
+            else
+            {
+                mouse.Cursor.CursorMode = CursorMode.Raw;
+            }
+        }
+
         private static void Keyboard_KeyDown(IKeyboard keyboard, Key key, int arg3)
         {
             switch (key)
             {
-                case Key.Left:
-                    camera.DecreaseZYAngle();
+                case Key.Escape:
+                    SetCursorMode();
                     break;
-                case Key.Right:
-                    camera.IncreaseZYAngle();
-                    break;
-                case Key.Down:
-                    camera.IncreaseDistance();
-                    break;
-                case Key.Up:
-                    camera.DecreaseDistance();
-                    break;
-                case Key.F:
-                    camera.IncreaseZXAngle();
-                    break;
-                case Key.L:
-                    camera.DecreaseZXAngle();
-                    break;
-                case Key.W:
-                    camera.DecreaseTargetZ();
-                    break;
-                case Key.S:
-                    camera.IncreaseTargetZ();
-                    break;
-                case Key.D:
-                    camera.IncreaseTargetX();
-                    break;
-                case Key.A:
-                    camera.DecreaseTargetX();
-                    break;
-                case Key.R:
-                    camera.DecreaseTargetZ();
-                    break;
-                case Key.T:
-                    camera.IncreaseTargetZ();
+                case Key.Number0:
+                    RotateSide(0);
                     break;
                 case Key.Space:
-                    cubeArrangementModel.AnimationEnabled = !cubeArrangementModel.AnimationEnabled;
+                    animationInProgress = true;
+                    rotationDirection = 1;
+                    break;
+                case Key.Backspace:
+                    animationInProgress = true;
+                    rotationDirection = -1;
+                    break;
+                //case Key.Left:
+                //    camera.DecreaseZYAngle();
+                //    break;
+                //case Key.Right:
+                //    camera.IncreaseZYAngle();
+                //    break;
+                //case Key.Down:
+                //    camera.IncreaseDistance();
+                //    break;
+                //case Key.Up:
+                //    camera.DecreaseDistance();
+                //    break;
+                //case Key.F:
+                //    camera.IncreaseZXAngle();
+                //    break;
+                //case Key.L:
+                //    camera.DecreaseZXAngle();
+                //    break;
+                //case Key.W:
+                //    camera.DecreaseTargetZ();
+                //    break;
+                //case Key.S:
+                //    camera.IncreaseTargetZ();
+                //    break;
+                //case Key.D:
+                //    camera.IncreaseTargetX();
+                //    break;
+                //case Key.A:
+                //    camera.DecreaseTargetX();
+                //    break;
+                //case Key.R:
+                //    camera.DecreaseTargetZ();
+                //    break;
+                //case Key.T:
+                //    camera.IncreaseTargetZ();
+                //    break;
+                //case Key.Space:
+                //    cubeArrangementModel.AnimationEnabled = !cubeArrangementModel.AnimationEnabled;
+                //break;
+            }
+        }
+
+        private static void RotateSide(int side)
+        {
+            selectedRotation = true;
+            animatedCubes = new List<ModelObjectDescriptor>();
+            switch (side)
+            {
+                case 0:
+                    foreach(var cube in cubes)
+                    {
+                        if(cube.Zindex == 1){
+                            //Matrix4X4<float> rotation = Matrix4X4.CreateRotationZ((float)Math.PI / 2f);
+                            //cube.PageRotationMatrix = rotation * cube.PageRotationMatrix;
+                            animatedCubes.Add(cube);
+                            rotationProgress = 0;
+                            rotationAxis = 2;
+                        }
+                    }
                     break;
             }
         }
@@ -241,6 +319,132 @@ namespace GrafikaSzeminarium
             // make it threadsafe
             cubeArrangementModel.AdvanceTime(deltaTime);
 
+            if (animationInProgress)
+            {
+                advanceRotation((float)deltaTime);
+            }
+
+            handleMovement();
+
+        }
+
+        public static void advanceRotation(float amount)
+        {
+            if (!selectedRotation)
+            {
+                return;
+            }
+            rotationProgress += amount;
+            if (rotationProgress > 1)
+            {
+                rotationProgress = 1;
+                animationInProgress = false;
+                selectedRotation = false;
+
+            }
+            Matrix4X4<float> rotation = Matrix4X4<float>.Identity;
+            if (rotationProgress < 1)
+            {
+                switch (rotationAxis)
+                {
+                    case 0: // x
+                        break;
+                    case 1: // y
+                        break;
+                    case 2: // z
+                        rotation = Matrix4X4.CreateRotationZ((float)Math.PI / 2 * rotationProgress * rotationDirection);
+                        break;
+                }
+                foreach (var cube in animatedCubes)
+                {
+                    cube.TempRotationMatrix = rotation;
+                }
+            }
+            else
+            {
+                rotation = Matrix4X4.CreateRotationZ((float)Math.PI / 2 * rotationProgress * rotationDirection);
+                foreach (var cube in animatedCubes)
+                {
+                    cube.TempRotationMatrix = Matrix4X4<float>.Identity;
+                    cube.PageRotationMatrix *= rotation;
+                }
+            }
+        }
+
+        private static void OnMouseMove(IMouse mouse, Vector2 position)
+        {
+            //Console.WriteLine($"Mouse moved to: {position.X}, {position.Y}");
+            camera.MouseMove(position.X, position.Y);
+        }
+
+        private static void handleMovement()
+        {
+            //foreach(var key in _keyboard.SupportedKeys)
+            //{
+            //    Console.WriteLine(key);
+            //    camera.Move(key);
+            //}
+
+            if (_keyboard.IsKeyPressed(Key.A))
+            {
+                //camera.DecreaseTargetX();
+                camera.Move(Key.A);
+            }
+            if (_keyboard.IsKeyPressed(Key.D))
+            {
+                //camera.IncreaseTargetX();
+                camera.Move(Key.D);
+            }
+            if (_keyboard.IsKeyPressed(Key.W))
+            {
+                //camera.IncreaseTargetY();
+                camera.Move(Key.W);
+            }
+            if (_keyboard.IsKeyPressed(Key.S))
+            {
+                //camera.DecreaseTargetY();
+                camera.Move(Key.S);
+            }
+            //if (_keyboard.IsKeyPressed(Key.R))
+            //{
+            //    //camera.DecreaseTargetY();
+            //}
+            //if (_keyboard.IsKeyPressed(Key.T))
+            //{
+            //    //camera.IncreaseTargetY();
+            //}
+            //if (_keyboard.IsKeyPressed(Key.F))
+            //{
+            //    camera.IncreaseZXAngle();
+            //}
+            //if (_keyboard.IsKeyPressed(Key.L))
+            //{
+            //    camera.DecreaseZXAngle();
+            //}
+            //if (_keyboard.IsKeyPressed(Key.Left))
+            //{
+            //    //camera.DecreaseZYAngle();
+            //    //camera.UpdateCamera(0.0f, -0.012f);
+            //    camera.Move(Key.Left);
+            //}
+            //if (_keyboard.IsKeyPressed(Key.Right))
+            //{
+            //    //camera.IncreaseZYAngle();
+            //    //camera.UpdateCamera(0.0f, 0.012f);
+            //    camera.Move(Key.Right);
+            //}
+            //if (_keyboard.IsKeyPressed(Key.Down))
+            //{
+            //    //camera.IncreaseDistance();
+            //    //camera.UpdateCamera(-0.012f, 0.0f);
+            //    camera.Move(Key.Down);
+            //}
+            //if (_keyboard.IsKeyPressed(Key.Up))
+            //{
+            //    //camera.DecreaseDistance();
+            //    //camera.UpdateCamera(0.012f, 0.0f);
+            //    camera.Move(Key.Up);
+            //}
         }
 
         private static unsafe void GraphicWindow_Render(double deltaTime)
@@ -250,10 +454,12 @@ namespace GrafikaSzeminarium
 
             Gl.UseProgram(program);
 
-            var viewMatrix = Matrix4X4.CreateLookAt(camera.Position, camera.Target, camera.UpVector);
+            //var viewMatrix = Matrix4X4.CreateLookAt(camera.Position, camera.Target, camera.UpVector);
+            var viewMatrix = camera.View;
+            //var viewMatrix = Matrix4X4.CreateLookAt(camera.Position, camera.Forward, camera.UpVector);
             SetMatrix(viewMatrix, ViewMatrixVariableName);
 
-            var projectionMatrix = Matrix4X4.CreatePerspectiveFieldOfView<float>((float)(Math.PI / 2), 1024f / 768f, 0.1f, 100f);
+            var projectionMatrix = Matrix4X4.CreatePerspectiveFieldOfView<float>((float)(Math.PI / 2), AspectRatio, 0.1f, 100f);
             SetMatrix(projectionMatrix, ProjectionMatrixVariableName);
 
 
@@ -266,10 +472,25 @@ namespace GrafikaSzeminarium
                 {
                     for(int k = -1; k <= 1; k++)
                     {
-                        Matrix4X4<float> trans = Matrix4X4.CreateTranslation(-i * 0.21f, j * 0.21f, k * 0.21f);
-                        Matrix4X4<float> cubeModelMatrix = cubeScale * trans;
-                        SetMatrix(cubeModelMatrix, ModelMatrixVariableName);
-                        DrawModelObject(cubes[index]);
+                        if (cubes[index].initialDraw)
+                        {
+                            Matrix4X4<float> trans = Matrix4X4.CreateTranslation(-i * 0.21f, j * 0.21f, k * 0.21f);
+                            Matrix4X4<float> cubeModelMatrix = cubeScale * trans;
+                            cubes[index].InitialPositionMatrix = cubeModelMatrix;
+                            cubes[index].PageRotationMatrix = Matrix4X4<float>.Identity;
+                            cubes[index].TempRotationMatrix = Matrix4X4<float>.Identity;
+                            SetMatrix(cubeModelMatrix, ModelMatrixVariableName);
+                            cubes[index].initialDraw = false;
+                            cubes[index].Xindex = i;
+                            cubes[index].Yindex = j;
+                            cubes[index].Zindex = k;
+                        }
+                        else
+                        {
+                            Matrix4X4<float> trans = cubes[index].InitialPositionMatrix *  cubes[index].PageRotationMatrix * cubes[index].TempRotationMatrix;
+                            SetMatrix(trans, ModelMatrixVariableName);
+                        }
+                            DrawModelObject(cubes[index]);
                         index++;
                     }
                 }
@@ -289,6 +510,7 @@ namespace GrafikaSzeminarium
             //DrawModelObject(cube);
 
         }
+
 
         private static unsafe void DrawModelObject(ModelObjectDescriptor modelObject)
         {

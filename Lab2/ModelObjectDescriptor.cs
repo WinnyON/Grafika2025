@@ -1,8 +1,10 @@
-﻿using Silk.NET.OpenGL;
+﻿using Silk.NET.Maths;
+using Silk.NET.OpenGL;
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+//using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,7 +20,16 @@ namespace GrafikaSzeminarium
         public uint Colors { get; private set; }
         public uint Indices { get; private set; }
         public uint IndexArrayLength { get; private set; }
+        public bool initialDraw = true;
+        public int Xindex;
+        public int Yindex;
+        public int Zindex;
 
+        public Matrix4X4<float> PageRotationMatrix;
+        public Matrix4X4<float> TempRotationMatrix;
+        public Matrix4X4<float> InitialPositionMatrix;
+
+        //public float rotationProgress = 1.0f;
         private GL Gl;
 
         private static float[] colorArray;
@@ -186,6 +197,8 @@ namespace GrafikaSzeminarium
             return new ModelObjectDescriptor() {Vao= vao, Vertices = vertices, Colors = colors, Indices = indices, IndexArrayLength = (uint)indexArray.Length, Gl = Gl};
 
         }
+
+
 
         protected virtual void Dispose(bool disposing)
         {
