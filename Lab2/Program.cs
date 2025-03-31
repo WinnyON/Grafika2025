@@ -1,4 +1,5 @@
-﻿using Silk.NET.Input;
+﻿using Silk.NET.Core;
+using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
@@ -33,6 +34,12 @@ namespace GrafikaSzeminarium
         private static int rotationAxis;
         private static int rotationDirection = 1;
         private static bool selectedRotation = false;
+
+        private static int[] mix;
+        private static int[] dir;
+        private static Random random;
+        private static bool mixOn = false;
+        private static int currentMix = 0;
 
         private const string ModelMatrixVariableName = "uModel";
         private const string ViewMatrixVariableName = "uView";
@@ -73,6 +80,7 @@ namespace GrafikaSzeminarium
 
         static void Main(string[] args)
         {
+            random = new Random();
             WindowOptions windowOptions = WindowOptions.Default;
             windowOptions.Title = "Lab2";
             windowOptions.Size = new Silk.NET.Maths.Vector2D<int>((int)WindowWidth, (int)WindowHeight);
@@ -242,6 +250,30 @@ namespace GrafikaSzeminarium
                 case Key.Number0:
                     RotateSide(0);
                     break;
+                case Key.Number1:
+                    RotateSide(1);
+                    break;
+                case Key.Number2:
+                    RotateSide(2);
+                    break;
+                case Key.Number3:
+                    RotateSide(3);
+                    break;
+                case Key.Number4:
+                    RotateSide(4);
+                    break;
+                case Key.Number5:
+                    RotateSide(5);
+                    break;
+                case Key.Number6:
+                    RotateSide(6);
+                    break;
+                case Key.Number7:
+                    RotateSide(7);
+                    break;
+                case Key.Number8:
+                    RotateSide(8);
+                    break;
                 case Key.Space:
                     animationInProgress = true;
                     rotationDirection = 1;
@@ -250,63 +282,155 @@ namespace GrafikaSzeminarium
                     animationInProgress = true;
                     rotationDirection = -1;
                     break;
-                //case Key.Left:
-                //    camera.DecreaseZYAngle();
-                //    break;
-                //case Key.Right:
-                //    camera.IncreaseZYAngle();
-                //    break;
-                //case Key.Down:
-                //    camera.IncreaseDistance();
-                //    break;
-                //case Key.Up:
-                //    camera.DecreaseDistance();
-                //    break;
-                //case Key.F:
-                //    camera.IncreaseZXAngle();
-                //    break;
-                //case Key.L:
-                //    camera.DecreaseZXAngle();
-                //    break;
-                //case Key.W:
-                //    camera.DecreaseTargetZ();
-                //    break;
-                //case Key.S:
-                //    camera.IncreaseTargetZ();
-                //    break;
-                //case Key.D:
-                //    camera.IncreaseTargetX();
-                //    break;
-                //case Key.A:
-                //    camera.DecreaseTargetX();
-                //    break;
-                //case Key.R:
-                //    camera.DecreaseTargetZ();
-                //    break;
-                //case Key.T:
-                //    camera.IncreaseTargetZ();
-                //    break;
-                //case Key.Space:
-                //    cubeArrangementModel.AnimationEnabled = !cubeArrangementModel.AnimationEnabled;
-                //break;
+                case Key.R:
+                    generateRotations();
+                    mixOn = true;
+                    currentMix = 0;
+                    animationInProgress = false;
+                    break;
+                case Key.Enter:
+                    cubeArrangementModel.resetScale();
+                    cubeArrangementModel.AnimationEnabled = !cubeArrangementModel.AnimationEnabled;
+                    break;
+            }
+        }
+
+        private static bool checkComplete()
+        {
+            int index = 0;
+            for (int i = -1; i <= 1; i++)
+            {
+                for (int j = -1; j <= 1; j++)
+                {
+                    for (int k = -1; k <= 1; k++)
+                    {
+                        if (!(cubes[index].Xindex == i && cubes[index].Yindex == j && cubes[index].Zindex == k))
+                        {
+                            return false;
+                        }
+                        index++;
+                    }
+                }
+            }
+            return true;
+        }
+
+        private static void generateRotations()
+        {
+            mix = new int[30];
+            dir = new int[30];
+            for(int i = 0; i < 30; i++)
+            {
+                mix[i] = random.Next(9);
+                if(random.Next(2) == 0)
+                {
+                    dir[i] = -1;
+                }
+                else
+                {
+                    dir[i] = 1;
+                }
             }
         }
 
         private static void RotateSide(int side)
         {
+            //foreach(var cube in cubes)
+            //{
+            //    Console.WriteLine(cube.Xindex + " " + cube.Yindex + " " + cube.Zindex);
+            //}
             selectedRotation = true;
             animatedCubes = new List<ModelObjectDescriptor>();
+            rotationProgress = 0;
             switch (side)
             {
                 case 0:
-                    foreach(var cube in cubes)
+                    rotationAxis = 2;
+                    foreach (var cube in cubes)
                     {
                         if(cube.Zindex == 1){
-                            //Matrix4X4<float> rotation = Matrix4X4.CreateRotationZ((float)Math.PI / 2f);
-                            //cube.PageRotationMatrix = rotation * cube.PageRotationMatrix;
                             animatedCubes.Add(cube);
-                            rotationProgress = 0;
-                            rotationAxis = 2;
+                            
+                        }
+                    }
+                    break;
+                case 1:
+                    rotationAxis = 2;
+                    foreach (var cube in cubes)
+                    {
+                        if (cube.Zindex == 0)
+                        {
+                            animatedCubes.Add(cube);
+                        }
+                    }
+                    break;
+                case 2:
+                    rotationAxis = 2;
+                    foreach (var cube in cubes)
+                    {
+                        if (cube.Zindex == -1)
+                        {
+                            animatedCubes.Add(cube);
+                        }
+                    }
+                    break;
+                case 3:
+                    rotationAxis = 1;
+                    foreach (var cube in cubes)
+                    {
+                        if (cube.Yindex == 1)
+                        {
+                            animatedCubes.Add(cube);
+                        }
+                    }
+                    break;
+                case 4:
+                    rotationAxis = 1;
+                    foreach (var cube in cubes)
+                    {
+                        if (cube.Yindex == 0)
+                        {
+                            animatedCubes.Add(cube);
+                        }
+                    }
+                    break;
+                case 5:
+                    rotationAxis = 1;
+                    foreach (var cube in cubes)
+                    {
+                        if (cube.Yindex == -1)
+                        {
+                            animatedCubes.Add(cube);
+                        }
+                    }
+                    break;
+                case 6:
+                    rotationAxis = 0;
+                    foreach (var cube in cubes)
+                    {
+                        if (cube.Xindex == 1)
+                        {
+                            animatedCubes.Add(cube);
+                        }
+                    }
+                    break;
+                case 7:
+                    rotationAxis = 0;
+                    foreach (var cube in cubes)
+                    {
+                        if (cube.Xindex == 0)
+                        {
+                            animatedCubes.Add(cube);
+                        }
+                    }
+                    break;
+                case 8:
+                    rotationAxis = 0;
+                    foreach (var cube in cubes)
+                    {
+                        if (cube.Xindex == -1)
+                        {
+                            animatedCubes.Add(cube);
                         }
                     }
                     break;
@@ -319,7 +443,7 @@ namespace GrafikaSzeminarium
             // make it threadsafe
             cubeArrangementModel.AdvanceTime(deltaTime);
 
-            if (animationInProgress)
+            if (animationInProgress || mixOn)
             {
                 advanceRotation((float)deltaTime);
             }
@@ -330,7 +454,22 @@ namespace GrafikaSzeminarium
 
         public static void advanceRotation(float amount)
         {
-            if (!selectedRotation)
+            if(mixOn)
+            {
+                amount *= 1.5f;
+            }
+            if(!animationInProgress && mixOn && currentMix < 30)
+            {
+                rotationDirection = dir[currentMix];
+                RotateSide(mix[currentMix]);
+                animationInProgress = true;
+                currentMix++;
+                if(currentMix == 30)
+                {
+                    mixOn = false;
+                }
+            }
+            else if (!selectedRotation)
             {
                 return;
             }
@@ -343,18 +482,22 @@ namespace GrafikaSzeminarium
 
             }
             Matrix4X4<float> rotation = Matrix4X4<float>.Identity;
+            
+            switch (rotationAxis)
+            {
+                case 0: // x
+                    rotation = Matrix4X4.CreateRotationX((float)Math.PI / 2 * rotationProgress * rotationDirection);
+                    break;
+                case 1: // y
+                    rotation = Matrix4X4.CreateRotationY((float)Math.PI / 2 * rotationProgress * rotationDirection);
+                    break;
+                case 2: // z
+                    rotation = Matrix4X4.CreateRotationZ((float)Math.PI / 2 * rotationProgress * rotationDirection);
+                    break;
+            }
+            
             if (rotationProgress < 1)
             {
-                switch (rotationAxis)
-                {
-                    case 0: // x
-                        break;
-                    case 1: // y
-                        break;
-                    case 2: // z
-                        rotation = Matrix4X4.CreateRotationZ((float)Math.PI / 2 * rotationProgress * rotationDirection);
-                        break;
-                }
                 foreach (var cube in animatedCubes)
                 {
                     cube.TempRotationMatrix = rotation;
@@ -362,11 +505,34 @@ namespace GrafikaSzeminarium
             }
             else
             {
-                rotation = Matrix4X4.CreateRotationZ((float)Math.PI / 2 * rotationProgress * rotationDirection);
                 foreach (var cube in animatedCubes)
                 {
                     cube.TempRotationMatrix = Matrix4X4<float>.Identity;
                     cube.PageRotationMatrix *= rotation;
+                    int temp;
+                    switch (rotationAxis)
+                    {
+                        case 0: // x axis
+                            temp = rotationDirection * cube.Yindex;
+                            cube.Yindex = -rotationDirection * cube.Zindex;
+                            cube.Zindex = temp;
+                            break;
+                        case 1: // y axis
+                            temp = rotationDirection * cube.Xindex;
+                            cube.Xindex = -rotationDirection * cube.Zindex;
+                            cube.Zindex = temp;
+                            break;
+                        case 2: // z axis
+                            temp = -rotationDirection * cube.Xindex;
+                            cube.Xindex = rotationDirection * cube.Yindex;
+                            cube.Yindex = temp;
+                            break;
+                    }
+                }
+                if (checkComplete())
+                {
+                    cubeArrangementModel.resetScale();
+                    cubeArrangementModel.AnimationEnabled = !cubeArrangementModel.AnimationEnabled;
                 }
             }
         }
@@ -379,12 +545,6 @@ namespace GrafikaSzeminarium
 
         private static void handleMovement()
         {
-            //foreach(var key in _keyboard.SupportedKeys)
-            //{
-            //    Console.WriteLine(key);
-            //    camera.Move(key);
-            //}
-
             if (_keyboard.IsKeyPressed(Key.A))
             {
                 //camera.DecreaseTargetX();
@@ -405,46 +565,6 @@ namespace GrafikaSzeminarium
                 //camera.DecreaseTargetY();
                 camera.Move(Key.S);
             }
-            //if (_keyboard.IsKeyPressed(Key.R))
-            //{
-            //    //camera.DecreaseTargetY();
-            //}
-            //if (_keyboard.IsKeyPressed(Key.T))
-            //{
-            //    //camera.IncreaseTargetY();
-            //}
-            //if (_keyboard.IsKeyPressed(Key.F))
-            //{
-            //    camera.IncreaseZXAngle();
-            //}
-            //if (_keyboard.IsKeyPressed(Key.L))
-            //{
-            //    camera.DecreaseZXAngle();
-            //}
-            //if (_keyboard.IsKeyPressed(Key.Left))
-            //{
-            //    //camera.DecreaseZYAngle();
-            //    //camera.UpdateCamera(0.0f, -0.012f);
-            //    camera.Move(Key.Left);
-            //}
-            //if (_keyboard.IsKeyPressed(Key.Right))
-            //{
-            //    //camera.IncreaseZYAngle();
-            //    //camera.UpdateCamera(0.0f, 0.012f);
-            //    camera.Move(Key.Right);
-            //}
-            //if (_keyboard.IsKeyPressed(Key.Down))
-            //{
-            //    //camera.IncreaseDistance();
-            //    //camera.UpdateCamera(-0.012f, 0.0f);
-            //    camera.Move(Key.Down);
-            //}
-            //if (_keyboard.IsKeyPressed(Key.Up))
-            //{
-            //    //camera.DecreaseDistance();
-            //    //camera.UpdateCamera(0.012f, 0.0f);
-            //    camera.Move(Key.Up);
-            //}
         }
 
         private static unsafe void GraphicWindow_Render(double deltaTime)
@@ -464,7 +584,7 @@ namespace GrafikaSzeminarium
 
 
             //var modelMatrixCenterCube = Matrix4X4.CreateScale((float)cubeArrangementModel.CenterCubeScale);
-            Matrix4X4<float> cubeScale = Matrix4X4.CreateScale((float)cubeArrangementModel.CenterCubeScale);
+            
             int index = 0;
             for (int i = -1; i <= 1; i++)
             {
@@ -474,6 +594,7 @@ namespace GrafikaSzeminarium
                     {
                         if (cubes[index].initialDraw)
                         {
+                            Matrix4X4<float> cubeScale = Matrix4X4.CreateScale((float)cubeArrangementModel.CenterCubeScale);
                             Matrix4X4<float> trans = Matrix4X4.CreateTranslation(-i * 0.21f, j * 0.21f, k * 0.21f);
                             Matrix4X4<float> cubeModelMatrix = cubeScale * trans;
                             cubes[index].InitialPositionMatrix = cubeModelMatrix;
@@ -487,8 +608,20 @@ namespace GrafikaSzeminarium
                         }
                         else
                         {
-                            Matrix4X4<float> trans = cubes[index].InitialPositionMatrix *  cubes[index].PageRotationMatrix * cubes[index].TempRotationMatrix;
-                            SetMatrix(trans, ModelMatrixVariableName);
+                            if (cubeArrangementModel.AnimationEnabled)
+                            {
+                                Matrix4X4<float> cubeScale = Matrix4X4.CreateScale((float)cubeArrangementModel.CenterCubeScale * 0.2f);
+                                float offset = (float)cubeArrangementModel.CenterCubeScale * 0.2f + 0.01f;
+                                Matrix4X4<float> translation = Matrix4X4.CreateTranslation(-i * offset, j * offset, k * offset);
+                                Matrix4X4<float> cubeModelMatrix = cubeScale * translation;
+                                SetMatrix(cubeModelMatrix, ModelMatrixVariableName);
+
+                            }
+                            else
+                            {
+                                Matrix4X4<float> trans = cubes[index].InitialPositionMatrix * cubes[index].PageRotationMatrix * cubes[index].TempRotationMatrix;
+                                SetMatrix(trans, ModelMatrixVariableName);
+                            }
                         }
                             DrawModelObject(cubes[index]);
                         index++;

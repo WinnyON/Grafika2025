@@ -33,6 +33,11 @@ namespace Szeminarium
         /// </summary>
         public double DiamondCubeGlobalYAngle { get; private set; } = 0;
 
+        public void resetScale()
+        {
+            CenterCubeScale = 0.2;
+        }
+
         internal void AdvanceTime(double deltaTime)
         {
             // we do not advance the simulation when animation is stopped
@@ -43,12 +48,12 @@ namespace Szeminarium
             Time += deltaTime;
 
             // lets produce an oscillating scale in time
-            CenterCubeScale = 1 + 0.2 * Math.Sin(1.5 * Time);
+            CenterCubeScale = 0.8 + 0.2 * Math.Sin(1.5 * Time);
 
             // the rotation angle is time x angular velocity;
-            DiamondCubeLocalAngle = Time * 10;
+            //DiamondCubeLocalAngle = Time * 10;
 
-            DiamondCubeGlobalYAngle = -Time;
+            //DiamondCubeGlobalYAngle = -Time;
         }
     }
 }
