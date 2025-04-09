@@ -45,7 +45,12 @@ namespace GrafikaSzeminarium
         private static float specular = 50;
         private static float diffuse = 50;
         private static int currentColor = 0;
+        private static float lightColorR = 1.0f;
+        private static float lightColorG = 1.0f;
+        private static float lightColorB = 1.0f;
+
         private static uint program;
+
 
         static void Main(string[] args)
         {
@@ -198,7 +203,7 @@ namespace GrafikaSzeminarium
 
             Gl.UseProgram(program);
 
-            SetUniform3(LightColorVariableName, new Vector3(1f, 1f, 1f));
+            SetUniform3(LightColorVariableName, new Vector3(lightColorR / 255f, lightColorG / 255f, lightColorB / 255f));
             SetUniform3(LightPositionVariableName, new Vector3(0f, 1.2f, 0f));
             SetUniform3(ViewPositionVariableName, new Vector3(camera.Position.X, camera.Position.Y, camera.Position.Z));
             SetUniform1(ShinenessVariableName, shininess);
@@ -233,6 +238,9 @@ namespace GrafikaSzeminarium
             ImGuiNET.ImGui.SliderFloat("AmbientStrength", ref ambient, 1, 100);
             ImGuiNET.ImGui.SliderFloat("SpecularStrength", ref specular, 1, 100);
             ImGuiNET.ImGui.SliderFloat("DiffuseStrength", ref diffuse, 1, 100);
+            ImGuiNET.ImGui.SliderFloat("LightColor R", ref lightColorR, 0, 255);
+            ImGuiNET.ImGui.SliderFloat("LightColor G", ref lightColorG, 0, 255);
+            ImGuiNET.ImGui.SliderFloat("LightColor B", ref lightColorB, 0, 255);
             ImGuiNET.ImGui.Combo("Side Color", ref currentColor, "red\0green\0blue\0yellow\0cyan\0pink");
             ImGuiNET.ImGui.End();
 
