@@ -43,7 +43,7 @@ namespace GrafikaSzeminarium
         private static float radius = 0.25f / (float)Math.Tan(Math.PI / numberOfTiles);
 
         private static int selectedModel = 1; // Gourard
-        private static uint program2;
+        private static uint program1;
 
         private static uint program;
 
@@ -162,6 +162,42 @@ namespace GrafikaSzeminarium
             {
                 Console.WriteLine($"Error linking shader {Gl.GetProgramInfoLog(program)}");
             }
+
+            // phong
+            uint vshader1 = Gl.CreateShader(ShaderType.VertexShader);
+            uint fshader1 = Gl.CreateShader(ShaderType.FragmentShader);
+
+            Gl.ShaderSource(vshader1, GetEmbeddedResourceAsString("Shaders.VertexShader.vert"));
+            Gl.CompileShader(vshader1);
+            Gl.GetShader(vshader1, ShaderParameterName.CompileStatus, out int vStatus1);
+            if (vStatus1 != (int)GLEnum.True)
+                throw new Exception("Vertex shader failed to compile: " + Gl.GetShaderInfoLog(vshader1));
+
+            Gl.ShaderSource(fshader1, GetEmbeddedResourceAsString("Shaders.FragmentShader.frag"));
+            Gl.CompileShader(fshader1);
+            Gl.GetShader(fshader1, ShaderParameterName.CompileStatus, out int fStatus1);
+            if (fStatus1 != (int)GLEnum.True)
+                throw new Exception("Fragment shader failed to compile: " + Gl.GetShaderInfoLog(fshader1));
+
+            program1 = Gl.CreateProgram();
+            Gl.AttachShader(program1, vshader1);
+            Gl.AttachShader(program1, fshader1);
+            Gl.LinkProgram(program1);
+
+            Gl.DetachShader(program1, vshader1);
+            Gl.DetachShader(program1, fshader1);
+            Gl.DeleteShader(vshader1);
+            Gl.DeleteShader(fshader1);
+            if ((ErrorCode)Gl.GetError() != ErrorCode.NoError)
+            {
+
+            }
+
+            Gl.GetProgram(program, GLEnum.LinkStatus, out var status1);
+            if (status1 == 0)
+            {
+                Console.WriteLine($"Error linking shader {Gl.GetProgramInfoLog(program1)}");
+            }
         }
 
         private static string GetEmbeddedResourceAsString(string resourceRelativePath)
@@ -218,9 +254,16 @@ namespace GrafikaSzeminarium
             Gl.Clear(ClearBufferMask.ColorBufferBit);
             Gl.Clear(ClearBufferMask.DepthBufferBit);
 
-            Gl.UseProgram(program);
+            if (selectedModel == 1)
+            {
+                Gl.UseProgram(program);
+            }
+            else
+            {
+                Gl.UseProgram(program1);
+            }
 
-            SetUniform3(LightColorVariableName, new Vector3(1f, 1f, 1f));
+                SetUniform3(LightColorVariableName, new Vector3(1f, 1f, 1f));
             SetUniform3(LightPositionVariableName, new Vector3(camera.Position.X, camera.Position.Y, camera.Position.Z));
             SetUniform3(ViewPositionVariableName, new Vector3(camera.Position.X, camera.Position.Y, camera.Position.Z));
             SetUniform1(ShinenessVariableName, shininess);
@@ -256,6 +299,7 @@ namespace GrafikaSzeminarium
             //ImGuiNET.ImGui.ShowDemoWindow();
             ImGuiNET.ImGui.Begin("Lighting", ImGuiNET.ImGuiWindowFlags.AlwaysAutoResize | ImGuiNET.ImGuiWindowFlags.NoCollapse);
             ImGuiNET.ImGui.SliderFloat("Shininess", ref shininess, 5, 100);
+            ImGuiNET.ImGui.Combo("Lighting Model", ref selectedModel, "Phong\0Gourard");
             ImGuiNET.ImGui.End();
 
             imGuiController.Render();
