@@ -1,0 +1,79 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\airplane.obj" />
+    <None Remove="Resources\background_music.mp3" />
+    <None Remove="Resources\bonus_ball.obj" />
+    <None Remove="Resources\cube.obj" />
+    <None Remove="Resources\diffuse.dds" />
+    <None Remove="Resources\ember.obj" />
+    <None Remove="Resources\FinalBaseMesh.obj" />
+    <None Remove="Resources\ghost.obj" />
+    <None Remove="Resources\ghost_blue.png" />
+    <None Remove="Resources\ghost_grey.png" />
+    <None Remove="Resources\ghost_red.png" />
+    <None Remove="Resources\ground.obj" />
+    <None Remove="Resources\maze.txt" />
+    <None Remove="Resources\packman.obj" />
+    <None Remove="Resources\pacman.obj" />
+    <None Remove="Resources\pacman.png" />
+    <None Remove="Resources\skybox.png" />
+    <None Remove="Resources\teapot.obj" />
+    <None Remove="Resources\up.obj" />
+    <None Remove="Resources\up.png" />
+    <None Remove="Resources\wall.obj" />
+    <None Remove="Resources\wall2.obj" />
+    <None Remove="Resources\wall3.obj" />
+    <None Remove="Resources\wall4.obj" />
+    <None Remove="Shaders\FragmentShader.frag" />
+    <None Remove="Shaders\VertexShader.vert" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\background_music.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <EmbeddedResource Include="Resources\bonus_ball.obj" />
+    <EmbeddedResource Include="Resources\ghost.obj" />
+    <EmbeddedResource Include="Resources\ghost_pink.png" />
+    <EmbeddedResource Include="Resources\ghost_blue.png" />
+    <EmbeddedResource Include="Resources\ghost_grey.png" />
+    <EmbeddedResource Include="Resources\ghost_red.png" />
+    <EmbeddedResource Include="Resources\ground.obj" />
+    <EmbeddedResource Include="Resources\maze.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\pacman.obj" />
+    <EmbeddedResource Include="Resources\pacman.png" />
+    <EmbeddedResource Include="Resources\skybox.png" />
+    <EmbeddedResource Include="Resources\teapot.obj" />
+    <EmbeddedResource Include="Resources\ground.jpg" />
+    <EmbeddedResource Include="Resources\wall.obj" />
+    <EmbeddedResource Include="Resources\wall.jpg" />
+    <EmbeddedResource Include="Resources\wall2.obj" />
+    <EmbeddedResource Include="Resources\wall3.obj" />
+    <EmbeddedResource Include="Resources\wall4.obj" />
+    <EmbeddedResource Include="Shaders\FragmentShader.frag" />
+    <EmbeddedResource Include="Shaders\VertexShader.vert" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="Silk.NET" Version="2.20.0" />
+    <PackageReference Include="Silk.NET.OpenGL.Extensions.ImGui" Version="2.20.0" />
+    <PackageReference Include="StbImageSharp" Version="2.30.15" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\cube.obj" />
+  </ItemGroup>
+
+</Project>
