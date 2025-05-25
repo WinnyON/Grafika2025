@@ -413,10 +413,6 @@ namespace Projekt
 
 
             uint colors = Gl.GenBuffer();
-            /*   Gl.BindBuffer(BufferTargetARB.ArrayBuffer, colors);
-               Gl.BufferData(BufferTargetARB.ArrayBuffer, (ReadOnlySpan<float>)colorArray.AsSpan(), BufferUsageARB.StaticDraw);
-               Gl.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, 0, null);
-               Gl.EnableVertexAttribArray(1);*/
 
             uint texture = Gl.GenTexture();
             // activate texture 0

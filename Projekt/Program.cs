@@ -827,23 +827,6 @@ namespace Projekt
             }
         }
 
-        private static unsafe void DrawPulsingObject()
-        {
-            // set material uniform to rubber
-
-            var modelMatrixForCenterCube = Matrix4X4.CreateScale((float)cubeArrangementModel.CenterCubeScale) * Matrix4X4.CreateTranslation(new Vector3D<float>( 0f, 5f, 0f ));
-            SetModelMatrix(modelMatrixForCenterCube);
-            Gl.BindVertexArray(bonus.Vao);
-            Gl.DrawElements(GLEnum.Triangles,  bonus.IndexArrayLength, GLEnum.UnsignedInt, null);
-            Gl.BindVertexArray(0);
-
-            var modelMatrixForTable = Matrix4X4.CreateScale(1f, 1f, 1f);
-            SetModelMatrix(modelMatrixForTable);
-            Gl.BindVertexArray(table.Vao);
-            Gl.DrawElements(GLEnum.Triangles, table.IndexArrayLength, GLEnum.UnsignedInt, null);
-            Gl.BindVertexArray(0);
-        }
-
         private static unsafe void SetModelMatrix(Matrix4X4<float> modelMatrix)
         {
             int location = Gl.GetUniformLocation(program, ModelMatrixVariableName);

@@ -88,28 +88,11 @@ namespace Projekt
             }
         }
 
-        public void CreateMazeFromFile(string fileName)
-        {
-            String fullFilePath = "Projekt.Resources." + fileName;
-            this.Maze = ReadMazeFromFile(fullFilePath);
-        }
-
-        public List<GlObject> GetWallObjects(GL Gl)
-        {
-            List<GlObject> wallObjects = new List<GlObject>();
-            for (int i = 0; i < rows; i++)
-            {
-                for (int j = 0; j < cols; j++)
-                {
-                    if (Maze[i, j] == 1)
-                    {
-                        GlObject wall = ObjResourceReader.CreateObjectFromResource(Gl, "wall.obj", "wall.png");
-                        wallObjects.Add(wall);
-                    }
-                }
-            }
-            return wallObjects;
-        }
+        //public void CreateMazeFromFile(string fileName)
+        //{
+        //    String fullFilePath = "Projekt.Resources." + fileName;
+        //    this.Maze = ReadMazeFromFile(fullFilePath);
+        //}
 
         
 
